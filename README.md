@@ -15,7 +15,7 @@ This is the recommended method to install activpal_utils for Matlab.
 Before using this toolbox in another project check the licenses are compatible.
 
 ##### Git Subtrees Method:
-Navigate to the main projets home directory and run the following git commands:  
+Navigate to the main projects home directory and run the following git commands:  
 ```shell
 git remote add -f activpal_utils-matlab https://github.com/R-Broadley/activpal_utils-matlab.git  
 git subtree add --prefix +activpal_utils activpal_utils-matlab v1.0 --squash
