@@ -5,15 +5,26 @@ This repository contains a matlab toolbox (activpal_utils) for opening data file
 ## Installation
 A full list of releases can be found [here](https://github.com/R-Broadley/activpal_utils-matlab/releases).
 
-The recommended method to install is using the Matlab toolbox installation file (.mltbx).
+#### Install as Matlab Toolbox
+This is the recommended method to install activpal_utils for Matlab.  
+1. Download the latest version of the Matlab toolbox installation file (.mltbx) from [here](https://github.com/R-Broadley/activpal_utils-matlab/releases).
+2. Open the .mltbx file using Matlab.
+3. When prompted select Install.
 
-### Add activpal_utils as a module in another project
-Run the following git commands:  
+#### Add activpal_utils as a module in another project
+Before using this toolbox in another project check the licenses are compatible.
+
+##### Git Subtrees Method:
+Navigate to the main projets home directory and run the following git commands:  
+```shell
 git remote add -f activpal_utils-matlab https://github.com/R-Broadley/activpal_utils-matlab.git  
 git subtree add --prefix +activpal_utils activpal_utils-matlab v1.0 --squash
+```
 
 To update run:  
+```shell
 git subtree pull --prefix +activpal_utils activpal_utils-matlab v# --squash
+```
 
 
 ## Documentation
