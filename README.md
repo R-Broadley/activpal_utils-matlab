@@ -12,7 +12,7 @@ This is the recommended method to install activpal_utils for Matlab.
 2. Open the .mltbx file using Matlab.
 3. When prompted select Install.
 
-Further details can be found [here](https://github.com/R-Broadley/activpal_utils-matlab/wiki/Getting-Started)
+Further details can be found [here](https://github.com/R-Broadley/activpal_utils-matlab/wiki/Installation)
 
 
 ## Documentation
