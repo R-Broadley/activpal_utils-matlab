@@ -1,6 +1,7 @@
 # activpal-utils-matlab
 This repository contains a matlab toolbox (activpal_utils) for opening data files from activPAL&trade; devices.
 
+[![DOI](https://zenodo.org/badge/95444160.svg)](https://zenodo.org/badge/latestdoi/95444160)  
 
 ## Installation
 A full list of releases can be found [here](https://github.com/R-Broadley/activpal_utils-matlab/releases).
