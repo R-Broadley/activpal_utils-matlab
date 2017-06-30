@@ -37,7 +37,7 @@ end
 
 
 function output = repeat_row_pre_2015(input, n)
-%repeat_row_pre_2015 Impliments some of the behavior of the repelem function
+%repeat_row_pre_2015 Implements some of the behaviour of the repelem function
 %introduced in 2015a. It creates a copy of the input array where each row
 %in the input is copied a specified number of times.
 

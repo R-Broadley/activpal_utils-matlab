@@ -11,15 +11,15 @@ function Data = load_datx(filePath, varargin)
 %                   Name, Value pair arguments.
 %           Named arguments:
 %               'units' - Specify the units for accelerometer data.
-%                         Accepted values are: 'g' (defult), 'ms-2', 'raw'
+%                         Accepted values are: 'g' (default), 'ms-2', 'raw'
 %
 %   OUTPUT:
-%       A stucture with two fields:
-%           signals - a table with 4 columns (datetime, x, y, z)
+%       A structure with two fields:
+%           signals - a table with 4 columns (dateTime, x, y, z)
 %           meta - a structure containing the metadata
 %       The fields of the meta structure are:
 %           bitdepth - 8bits or 10bits
-%           resolution - ±2g, ±4g or ±8g (g = 9.81 ms-2)
+%           resolution - Â±2g, Â±4g or Â±8g (g = 9.81 ms-2)
 %           hz - the sample frequency
 %           axes - the number of axes recorded
 %           startTime - the start time of the recording
@@ -30,8 +30,9 @@ function Data = load_datx(filePath, varargin)
 %
 %   EXAMPLE:
 %       import activpal_utils.load_datx
-%       [fileName, fileDir] = uigetfile( 'activPAL Files (*.dat, *.datx,)', ...
-%                                        'Select an activPAL data file' );
+%       [fileName, fileDir] = uigetfile( ...
+%           {'*.datx; *.dat', 'activPAL Files (*.dat, *.datx)'}, ...
+%           'Select an activPAL data file' );
 %       filePath = fullfile(fileDir, fileName);
 %       Data = load_datx(filePath);
 %
@@ -93,7 +94,7 @@ function Data = load_datx(filePath, varargin)
 
     % Identify firmware
     firmware = uint64(fileContents(40)) * 255 + uint64(fileContents(18));
-    % Identify if file uses compresion
+    % Identify if file uses compression
     compression = fileContents(37);  % True(1) / False(0)
 
     % Extract Metadata
@@ -103,7 +104,7 @@ function Data = load_datx(filePath, varargin)
     % Extract accelerometer data
     fbodyInd = headerEnd + 1 : tailStart - 1;
     signals = extract_accdata( fileContents(fbodyInd), firmware, ...
-                                     compression );
+                               compression );
 
     % Remove invalid rows
     signals = clean(signals, 254);
@@ -166,8 +167,8 @@ function Metadata = extract_metadata(header)
     Metadata.axes = axesMap(header(281));
 
     Metadata.startTime = datetime( uint64(header(262)) + 2000, header(261), ...
-                                    header(260), header(257), header(258), ...
-                                    header(259) );
+                                   header(260), header(257), header(258), ...
+                                   header(259) );
 
     Metadata.stopTime = datetime( uint64(header(268)) + 2000, header(267), ...
                                   header(266), header(263), header(264), ...
@@ -175,19 +176,19 @@ function Metadata = extract_metadata(header)
 
     Metadata.duration = Metadata.stopTime - Metadata.startTime;
 
-    startConditionMap = containers.Map({0, 1, 2}, ...
-                                       {'Trigger', 'Immediately', 'Set Time'});
+    startConditionMap = containers.Map( {0, 1, 2}, ...
+                                        {'Trigger', 'Immediately', 'Set Time'} );
     Metadata.startCondition = startConditionMap(header(269));
 
-    stopConditionMap = containers.Map({0, 3, 64, 128}, ...
+    stopConditionMap = containers.Map( {0, 3, 64, 128}, ...
                                        {'Memory Full', 'Low Battery', 'USB', ...
-                                        'Programmed Time'});
+                                        'Programmed Time'} );
     Metadata.stopCondition = stopConditionMap(header(276));
 end
 
 
 function accelerometerData = extract_accdata(fbody, firmware, compression)
-    % Check length of data is divisable by 3
+    % Check length of data is divisible by 3
     remainder = rem(length(fbody), 3);
     if rem(length(fbody), 3) ~= 0
         fbody = fbody(1 : end - remainder);
