@@ -68,7 +68,7 @@ function Data = load_datx(filePath, varargin)
 
     % Input validation functions
     checkFilePath = @(x) check_file(x, 'validExt', {'.datx', '.dat'});
-    checkUnits = @(x) ischar(x) && ~any(strcmp(x, {'g', 'ms-2', 'raw'}));
+    checkUnits = @(x) ischar(x) && any(strcmp(x, {'g', 'ms-2', 'raw'}));
 
     % Parse inputs
     p = inputParser;
@@ -110,11 +110,11 @@ function Data = load_datx(filePath, varargin)
     signals = clean(signals, 254);
     signals = clean(signals, 255);
 
-    if units ~= 'raw'
+    if ~strcmp(units, 'raw')
         % Convert binary values to g
         signals = (double(signals) - 127) / 63;
     end
-    if units == 'ms-2'
+    if strcmp(units, 'ms-2')
         % Convert from g to ms-2
         signals = signals * 9.81;
     end
@@ -127,7 +127,8 @@ function Data = load_datx(filePath, varargin)
                           signals(:,1), signals(:,2), signals(:,3), ...
                           'VariableNames', {'dateTime', 'x', 'y', 'z'} );
 
-    Data.signals.Properties.VariableUnits = [{''}, repmat({units}, 1, 3)];
+    Data.signals.Properties.VariableUnits = [ {'datetime'}, ...
+                                              repmat({units}, 1, 3) ];
 end
 
 
