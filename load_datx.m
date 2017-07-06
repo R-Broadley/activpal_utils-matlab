@@ -55,7 +55,7 @@ function Data = load_datx(filePath, varargin)
     if verLessThan('matlab', '8.2')
         msgID = 'MATLAB:VersionError';
         msgText = 'Matlab version is too old to support load_datx';
-        ME = MException(msgID, msgText, fileExt);
+        ME = MException(msgID, msgText);
         throw(ME);
     end
 
