@@ -105,6 +105,9 @@ function Data = load_datx(filePath, varargin)
     fbodyInd = headerEnd + 1 : tailStart - 1;
     signals = extract_accdata( fileContents(fbodyInd), firmware, ...
                                compression );
+    
+    % Check number of data points
+    signals = check_length(signals, Data.meta.duration, filePath);
 
     % Remove invalid rows
     signals = clean(signals, 254);
@@ -249,6 +252,34 @@ function decompressedData = old_decompress(inputData)
     decompressedData = repeat_row(inputData, rowMultiplier);
 end
 
+
+function signals = check_length(signals, duration, filePath)
+    nsamples = length(signals);
+    nexpected = seconds(duration) * 20;
+    diffSamples = nsamples - nexpected;
+    if diffSamples < 6000  && diffSamples > 0  % diff < 5 minutes && +
+        % Shorten signals to length specified in duration
+        signals = signals(1 : nexpected, :);
+    elseif diffSamples > -6000  && diffSamples < 0  % diff < 5 minutes && -
+        % Keep signals as is but give warning
+        msgText = ['There are fewer data points than expected in file:\n' ...
+                   '%s \n' ...
+                   'Please check the signals data and meta.Duration ' ...
+                   'and report this to the developers at:\n' ...
+                   'https://github.com/R-Broadley/activpal_utils-matlab/issues'];
+        warning(msgText, filePath);
+    else
+        % Raise error due to large discrepancy
+        msgID = 'load_datx:fileError';
+        msgText = ['There are fewer data points than expected in file:\n' ...
+                   '%s \n' ...
+                   'Please report this to the developers at:\n' ...
+                   'https://github.com/R-Broadley/activpal_utils-matlab/issues'];
+        ME = MException(msgID, msgText, filePath);
+        throw(ME);
+    end
+end
+    
 
 function cleanedData = clean(inputData, value)
     [rows2remove, ~] = find(inputData == value);
