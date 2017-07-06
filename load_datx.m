@@ -283,10 +283,14 @@ end
 
 function cleanedData = clean(inputData, value)
     [rows2remove, ~] = find(inputData == value);
-    rows2remove = unique(rows2remove);
-
     cleanedData = inputData;
-
+    
+    % If no rows2remove return (out = in)
+    if isempty(rows2remove)
+        return;
+    end
+    
+    rows2remove = unique(rows2remove);
     for i = 1 : length(rows2remove)
         r = rows2remove(i);
         cleanedData(r, :) = cleanedData(r - 1, :);
