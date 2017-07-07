@@ -107,7 +107,7 @@ function Data = load_datx(filePath, varargin)
                                compression );
     
     % Check number of data points
-    signals = check_length(signals, Data.meta.duration, filePath);
+    signals = check_length(signals, Data.meta, filePath);
 
     % Remove invalid rows
     signals = clean(signals, 254);
@@ -253,14 +253,15 @@ function decompressedData = old_decompress(inputData)
 end
 
 
-function signals = check_length(signals, duration, filePath)
+function signals = check_length(signals, meta, filePath)
     nsamples = length(signals);
-    nexpected = seconds(duration) * 20;
+    nexpected = seconds(meta.duration) * double(meta.hz);
     diffSamples = nsamples - nexpected;
-    if diffSamples < 6000  && diffSamples > 0  % diff < 5 minutes && +
+    threshold = 5 * 60 * double(meta.hz);  % 5 minutes
+    if diffSamples < threshold  && diffSamples > 0  % diff < 5 minutes && +
         % Shorten signals to length specified in duration
         signals = signals(1 : nexpected, :);
-    elseif diffSamples > -6000  && diffSamples < 0  % diff < 5 minutes && -
+    elseif diffSamples > -threshold  && diffSamples < 0  % diff < 5 minutes && -
         % Keep signals as is but give warning
         msgText = ['There are fewer data points than expected in file:\n' ...
                    '%s \n' ...
