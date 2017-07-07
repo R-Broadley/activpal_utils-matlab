@@ -29,12 +29,11 @@ function Data = load_datx(filePath, varargin)
 %           startCondition - Memory Full, Low Battery, USB, Programmed Time
 %
 %   EXAMPLE:
-%       import activpal_utils.load_datx
 %       [fileName, fileDir] = uigetfile( ...
 %           {'*.datx; *.dat', 'activPAL Files (*.dat, *.datx)'}, ...
 %           'Select an activPAL data file' );
 %       filePath = fullfile(fileDir, fileName);
-%       Data = load_datx(filePath);
+%       Data = activpal_utils.load_datx(filePath);
 %
 %   For more information, see <a href="matlab:web(...
 %   'https://github.com/R-Broadley/activpal_utils-matlab/wiki/Documentation'...
