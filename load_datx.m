@@ -104,7 +104,7 @@ function Data = load_datx(filePath, varargin)
     fbodyInd = headerEnd + 1 : tailStart - 1;
     signals = extract_accdata( fileContents(fbodyInd), firmware, ...
                                compression );
-    
+
     % Check number of data points
     signals = check_length(signals, Data.meta, filePath);
 
@@ -190,10 +190,21 @@ function Metadata = extract_metadata(header)
 end
 
 
-function accelerometerData = extract_accdata(fbody, firmware, compression)
-    % Check length of data is divisible by 3
-    remainder = rem(length(fbody), 3);
-    if rem(length(fbody), 3) ~= 0
+function accelerometerData = extract_accdata(fbody, firmware, compression, naxes)
+    if naxes ~= 3
+        msgID = 'load_datx:fileError';
+        msgText = ['Reading data from uniaxial recordings has not been ' ...
+                   'implemented yet.\n' ...
+                   'Please report this to the developers at:\n' ...
+                   'https://github.com/R-Broadley/activpal_utils-matlab/issues'
+                   '\n Affected file: \n %s'];
+        ME = MException(msgID, msgText, filePath);
+        throw(ME);
+    end
+
+    % Check length of data is divisible by naxes
+    remainder = rem(length(fbody), naxes);
+    if remainder ~= 0
         fbody = fbody(1 : end - remainder);
         warning( strcat('Length of data_stream is not divisible ', ...
                         ' by the number of axes in ',...
@@ -202,8 +213,8 @@ function accelerometerData = extract_accdata(fbody, firmware, compression)
                         ' or some accelerometer data has been removed.') );
     end
 
-    % Reshape fbody to n by 3
-    fbody = reshape(fbody, 3, [])';
+    % Reshape fbody to n by naxes
+    fbody = reshape(fbody, naxes, [])';
 
     % Decompress
     if compression && firmware > 217
@@ -279,17 +290,17 @@ function signals = check_length(signals, meta, filePath)
         throw(ME);
     end
 end
-    
+
 
 function cleanedData = clean(inputData, value)
     [rows2remove, ~] = find(inputData == value);
     cleanedData = inputData;
-    
+
     % If no rows2remove return (out = in)
     if isempty(rows2remove)
         return;
     end
-    
+
     rows2remove = unique(rows2remove);
     for i = 1 : length(rows2remove)
         r = rows2remove(i);
