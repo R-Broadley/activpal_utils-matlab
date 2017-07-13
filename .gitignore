@@ -1,3 +1,4 @@
 # Ignore attributes files
 *.attr
 *.asv
+.DS_Store
