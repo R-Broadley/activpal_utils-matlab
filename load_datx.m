@@ -103,7 +103,7 @@ function Data = load_datx(filePath, varargin)
     % Extract accelerometer data
     fbodyInd = headerEnd + 1 : tailStart - 1;
     signals = extract_accdata( fileContents(fbodyInd), firmware, ...
-                               compression );
+                               compression, Data.meta.axes );
 
     % Check number of data points
     signals = check_length(signals, Data.meta, filePath);
