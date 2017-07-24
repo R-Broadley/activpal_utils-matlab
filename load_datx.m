@@ -106,7 +106,7 @@ function Data = load_datx(filePath, varargin)
                                compression, Data.meta.axes );
 
     % Check number of data points
-    signals = check_length(signals, Data.meta, filePath);
+    [signals, Data.meta] = check_length(signals, Data.meta, filePath);
 
     % Remove invalid rows
     signals = clean(signals, 254);
@@ -263,7 +263,7 @@ function decompressedData = old_decompress(inputData)
 end
 
 
-function signals = check_length(signals, meta, filePath)
+function [signals, meta] = check_length(signals, meta, filePath)
     nsamples = length(signals);
     nexpected = seconds(meta.duration) * double(meta.hz);
     diffSamples = nsamples - nexpected;
@@ -272,13 +272,9 @@ function signals = check_length(signals, meta, filePath)
         % Shorten signals to length specified in duration
         signals = signals(1 : nexpected, :);
     elseif diffSamples > -threshold  && diffSamples < 0  % diff < 5 minutes && -
-        % Keep signals as is but give warning
-        msgText = ['There are fewer data points than expected in file:\n' ...
-                   '%s \n' ...
-                   'Please check the signals data and meta.Duration ' ...
-                   'and report this to the developers at:\n' ...
-                   'https://github.com/R-Broadley/activpal_utils-matlab/issues'];
-        warning(msgText, filePath);
+        % Adjust duration to match nsamples in data
+        diffSeconds = diffSamples / 20;
+        meta.duration = meta.duration + seconds(diffSeconds);
     else
         % Raise error due to large discrepancy
         msgID = 'load_datx:fileError';
