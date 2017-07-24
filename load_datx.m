@@ -272,9 +272,10 @@ function [signals, meta] = correct_length(signals, meta, filePath)
         % Shorten signals to length specified in duration
         signals = signals(1 : nexpected, :);
     elseif diffSamples > -threshold  && diffSamples < 0  % diff < 5 minutes && -
-        % Adjust duration to match nsamples in data
+        % Adjust duration and stoptime to match nsamples in data
         diffSeconds = diffSamples / 20;
         meta.duration = meta.duration + seconds(diffSeconds);
+        meta.stopTime = meta.stopTime + seconds(diffSeconds);
     else
         % Raise error due to large discrepancy
         msgID = 'load_datx:fileError';
