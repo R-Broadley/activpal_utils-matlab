@@ -106,7 +106,7 @@ function Data = load_datx(filePath, varargin)
                                compression, Data.meta.axes );
 
     % Check number of data points
-    [signals, Data.meta] = check_length(signals, Data.meta, filePath);
+    [signals, Data.meta] = correct_length(signals, Data.meta, filePath);
 
     % Remove invalid rows
     signals = clean(signals, 254);
@@ -263,7 +263,7 @@ function decompressedData = old_decompress(inputData)
 end
 
 
-function [signals, meta] = check_length(signals, meta, filePath)
+function [signals, meta] = correct_length(signals, meta, filePath)
     nsamples = length(signals);
     nexpected = seconds(meta.duration) * double(meta.hz);
     diffSamples = nsamples - nexpected;
