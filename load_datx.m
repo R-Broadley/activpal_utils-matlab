@@ -105,8 +105,20 @@ function Data = load_datx(filePath, varargin)
     signals = extract_accdata( fileContents(fbodyInd), firmware, ...
                                compression, Data.meta.axes );
 
-    % Check number of data points
-    [signals, Data.meta] = correct_length(signals, Data.meta, filePath);
+    % Check sample rate
+    try
+        Data.meta.hz = correct_hz(length(signals), Data.meta.hz, ...
+                                  Data.meta.duration);
+    catch ME
+        if strcmp(ME.identifier, 'load_datx:samplerateError')
+            msg =  ['The sample rate is outside the excepted range in file:\n' ...
+                    '%s\n' ...
+                    'Please report this to the developers at:\n' ...
+                    'https://github.com/R-Broadley/activpal_utils-matlab/issues'];
+            ME = MException(ME.identifier, msg, filePath);
+        end
+    throw(ME);
+    end
 
     % Remove invalid rows
     signals = clean(signals, 254);
@@ -263,27 +275,16 @@ function decompressedData = old_decompress(inputData)
 end
 
 
-function [signals, meta] = correct_length(signals, meta, filePath)
-    nsamples = length(signals);
-    nexpected = seconds(meta.duration) * double(meta.hz);
-    diffSamples = nsamples - nexpected;
-    threshold = 5 * 60 * double(meta.hz);  % 5 minutes
-    if diffSamples < threshold  && diffSamples > 0  % diff < 5 minutes && +
-        % Shorten signals to length specified in duration
-        signals = signals(1 : nexpected, :);
-    elseif diffSamples > -threshold  && diffSamples < 0  % diff < 5 minutes && -
-        % Adjust duration and stoptime to match nsamples in data
-        diffSeconds = diffSamples / 20;
-        meta.duration = meta.duration + seconds(diffSeconds);
-        meta.stopTime = meta.stopTime + seconds(diffSeconds);
+function hz = correct_hz(nsamples, hz, duration)
+    allowedVariability = 0.005;  % 0.5%
+    maxAllowedHz = double(hz) * (1 + allowedVariability);
+    minAllowedHz = double(hz) * (1 - allowedVariability);
+    avgHz = nsamples / seconds(duration);
+
+    if avgHz > minAllowedHz && avgHz < maxAllowedHz
+        hz = avgHz;
     else
-        % Raise error due to large discrepancy
-        msgID = 'load_datx:fileError';
-        msgText = ['There are fewer data points than expected in file:\n' ...
-                   '%s \n' ...
-                   'Please report this to the developers at:\n' ...
-                   'https://github.com/R-Broadley/activpal_utils-matlab/issues'];
-        ME = MException(msgID, msgText, filePath);
+        ME = MException('load_datx:samplerateError', '');
         throw(ME);
     end
 end
