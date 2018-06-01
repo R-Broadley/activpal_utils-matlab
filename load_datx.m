@@ -174,12 +174,28 @@ function Metadata = extract_metadata(header)
     end
 
     resolutionMap = containers.Map({0, 1, 2}, {2, 4, 8});
-    Metadata.resolution = resolutionMap(resolutionByte);
+    try
+        Metadata.resolution = resolutionMap(resolutionByte);
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:Containers:Map:NoKey')
+            Metadata.resolution = ['Unknown (' num2str(resolutionByte) ')'];
+        else
+           rethrow(ME);
+        end
+    end
 
     Metadata.hz = header(36);
 
     axesMap = containers.Map({0, 1}, {3, 1});
-    Metadata.axes = axesMap(header(281));
+     try
+        Metadata.axes = axesMap(header(281));
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:Containers:Map:NoKey')
+            Metadata.axes = ['Unknown (' num2str(header(281)) ')'];
+        else
+           rethrow(ME);
+        end
+    end
 
     Metadata.startTime = datetime( uint64(header(262)) + 2000, header(261), ...
                                    header(260), header(257), header(258), ...
@@ -193,12 +209,28 @@ function Metadata = extract_metadata(header)
 
     startConditionMap = containers.Map( {0, 1, 2}, ...
                                         {'Trigger', 'Immediately', 'Set Time'} );
-    Metadata.startCondition = startConditionMap(header(269));
+    try
+        Metadata.startCondition = startConditionMap(header(269));
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:Containers:Map:NoKey')
+            Metadata.startCondition = ['Unknown (' num2str(header(269)) ')'];
+        else
+           rethrow(ME);
+        end
+    end
 
     stopConditionMap = containers.Map( {0, 3, 64, 128}, ...
                                        {'Memory Full', 'Low Battery', 'USB', ...
                                         'Programmed Time'} );
-    Metadata.stopCondition = stopConditionMap(header(276));
+    try
+        Metadata.stopCondition = stopConditionMap(header(276));
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:Containers:Map:NoKey')
+            Metadata.stopCondition = ['Unknown (' num2str(header(276)) ')'];
+        else
+           rethrow(ME);
+        end
+    end
 end
 
 
